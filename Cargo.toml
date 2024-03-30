@@ -1,0 +1,54 @@
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.0.1"
+edition = "2021"
+rust-version = "1.77.1"
+license = "MIT OR Apache-2.0"
+keywords = ["quantum", "openqasm"]
+categories = ["compilers"]
+# TODO: GitHub Pages
+homepage = "https://github.com/JarvisCraft/quanto"
+repository = "https://github.com/JarvisCraft/quanto"
+include = ["/src", "/examples"]
+
+[workspace.dependencies]
+quanto_lexer.path = "crates/lexer"
+quanto_parser.path = "crates/parser"
+quanto_macros.path = "crates/macros"
+
+# Proc macros
+syn = "2.0.57"
+quote = "1.0.35"
+
+# Documentation
+document-features = "0.2.7"
+
+[package]
+name = "quanto"
+description = "Quanto Language for Quantum Computations"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+quanto_lexer.workspace = true
+quanto_parser.workspace = true
+quanto_macros = { workspace = true, optional = true }
+
+# Documentation
+document-features.workspace = true
+
+[features]
+## Enable Proc macros
+macros = ["dep:quanto_macros"]
+
+[lints.rust]
+unsafe_code = "forbid"

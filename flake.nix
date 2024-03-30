@@ -11,11 +11,7 @@
       let
         overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs { inherit system overlays; };
-        rustVersion = (pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml);
-      in {
-        devShell = pkgs.mkShell {
-          buildInputs =
-            [ (rustVersion.override { extensions = [ "rust-src" ]; }) ];
-        };
-      });
+        rustVersion =
+          (pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml);
+      in { devShell = pkgs.mkShell { buildInputs = [ rustVersion ]; }; });
 }

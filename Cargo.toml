@@ -53,3 +53,9 @@ macros = ["dep:quanto_macros"]
 
 [lints.rust]
 unsafe_code = "forbid"
+
+
+[[example]]
+name = "simple"
+path = "examples/simple.rs"
+required-features = ["macros"]

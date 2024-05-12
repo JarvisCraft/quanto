@@ -1,0 +1,2 @@
+#[quanto::main]
+fn main() {}

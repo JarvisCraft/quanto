@@ -1,0 +1,20 @@
+[package]
+name = "quanto_runtime"
+description = "Runtime components of Quanto language"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+homepage.workspace = true
+repository.workspace = true
+include.workspace = true
+
+[dependencies]
+arbitrary-int.workspace = true
+smallvec.workspace = true
+
+[features]
+default = ["std"]
+std = []

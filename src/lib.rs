@@ -5,4 +5,5 @@
 //!
 
 #[cfg(feature = "macros")]
-pub use quanto_macros::main;
+pub use quanto_macros::{execute, main};
+pub use quanto_runtime as runtime;

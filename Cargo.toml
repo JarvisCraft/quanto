@@ -17,12 +17,17 @@ include = ["/src", "/examples"]
 [workspace.dependencies]
 quanto_lexer.path = "crates/lexer"
 quanto_parser.path = "crates/parser"
+quanto_runtime.path = "crates/runtime"
 quanto_macros.path = "crates/macros"
 
 # Proc macros
 syn = "2.0.57"
 quote = "1.0.35"
 proc-macro2 = "1.0.82"
+
+# Data
+arbitrary-int = { version = "1.2", default-features = false }
+smallvec = "1.13"
 
 # Documentation
 document-features = "0.2.7"
@@ -42,20 +47,28 @@ repository.workspace = true
 [dependencies]
 quanto_lexer.workspace = true
 quanto_parser.workspace = true
+quanto_runtime.workspace = true
 quanto_macros = { workspace = true, optional = true }
 
 # Documentation
 document-features.workspace = true
 
 [features]
+default-features = ["std"]
+std = ["quanto_runtime/std"]
 ## Enable Proc macros
 macros = ["dep:quanto_macros"]
 
 [lints.rust]
 unsafe_code = "forbid"
 
+[[example]]
+name = "main_attribute"
+path = "examples/main_attribute.rs"
+required-features = ["macros"]
+
 
 [[example]]
-name = "simple"
-path = "examples/simple.rs"
-required-features = ["macros"]
+name = "function_like"
+path = "examples/function_like.rs"
+required-features = ["std", "macros"]

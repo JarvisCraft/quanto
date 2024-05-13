@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "arbitrary-int"
+version = "1.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c84fc003e338a6f69fbd4f7fe9f92b535ff13e9af8997f3b14b6ddff8b1df46d"
+
+[[package]]
 name = "document-features"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -34,6 +40,7 @@ dependencies = [
  "quanto_lexer",
  "quanto_macros",
  "quanto_parser",
+ "quanto_runtime",
 ]
 
 [[package]]
@@ -54,6 +61,14 @@ name = "quanto_parser"
 version = "0.0.1"
 
 [[package]]
+name = "quanto_runtime"
+version = "0.0.1"
+dependencies = [
+ "arbitrary-int",
+ "smallvec",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -61,6 +76,12 @@ checksum = "0fa76aaf39101c457836aec0ce2316dbdc3ab723cdda1c6bd4e6ad4208acaca7"
 dependencies = [
  "proc-macro2",
 ]
+
+[[package]]
+name = "smallvec"
+version = "1.13.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
 
 [[package]]
 name = "syn"

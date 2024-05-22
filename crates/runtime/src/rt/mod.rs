@@ -1,6 +1,6 @@
 pub mod quantum_simulator;
 
-use core::future::Future;
+use core::{fmt::Display, future::Future};
 
 use crate::BoundProgram;
 
@@ -9,7 +9,7 @@ pub trait QuantoRuntime {
 }
 
 pub trait SyncQuantoRuntime: QuantoRuntime {
-    type Error;
+    type Error: Display;
 
     fn execute<const N: usize>(
         &self,

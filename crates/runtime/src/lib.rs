@@ -3,6 +3,7 @@
 //! Runtime components of Quanto language.
 
 extern crate alloc;
+extern crate core;
 
 use crate::value::Value;
 

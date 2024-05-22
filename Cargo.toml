@@ -29,6 +29,13 @@ proc-macro2 = "1.0.82"
 arbitrary-int = { version = "1.2", default-features = false }
 smallvec = "1.13"
 
+# Parser
+pest = "2.7.10"
+pest_derive = "2.7.10"
+
+# Utilities
+thiserror = "1.0.61"
+
 # Documentation
 document-features = "0.2.7"
 

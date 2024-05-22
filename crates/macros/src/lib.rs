@@ -39,13 +39,22 @@ pub fn execute(tokens: TokenStream) -> TokenStream {
         .collect();
     let args_count = converted_args.len();
 
-    TokenStream::from(quote_spanned! {span=>
-        {
-            const PROGRAM: #rt::Program<#args_count> = #rt::Program::parse(#src);
-            #rt::rt::SyncQuantoRuntime::execute(
-                #rt::global::sync_rt(),
-                PROGRAM.bind(&[#converted_args]),
-            )
+    TokenStream::from(if let Err(error) = quanto_parser::validate(&src.value()) {
+        let error = format!("Syntax error in Quanto expression:\n{error}");
+        quote_spanned! {span=>
+            {
+                ::core::compile_error!(#error)
+            }
+        }
+    } else {
+        quote_spanned! {span=>
+            {
+                const PROGRAM: #rt::Program<#args_count> = #rt::Program::parse(#src);
+                #rt::rt::SyncQuantoRuntime::execute(
+                    #rt::global::sync_rt(),
+                    PROGRAM.bind(&[#converted_args]),
+                )
+            }
         }
     })
 }

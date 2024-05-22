@@ -1,26 +1,22 @@
 fn main() {
     quanto::execute!(
         r#"
-defcalgrammar "openpulse";
+qubit[5] q1;
+const uint SIZE = 4;
+uint runtime_u = 2;
+qubit[SIZE] q2;  // Declare a 4-qubit register.
 
-const duration pulse_length_start = 20dt;
-const duration pulse_length_step = 1dt;
-const int pulse_length_num_steps = 100;
+x q1[0];
+z q2[SIZE - 2];  // The index operand is of type `const uint`.
 
-for int i in [1:pulse_length_num_steps] {
-    duration pulse_length = pulse_length_start + (i-1)*pulse_length_step);
-    duration sigma = pulse_length / 4;
-    // since we are manipulating pulse lengths it is easier to define and play the waveform in a `cal` block
-    cal {
-        waveform wf = gaussian(0.5, pulse_length, sigma);
-        // assume frame can be linked from a vendor supplied `cal` block
-        play(driveframe, wf);
-    }
-    measure $0;
-}
+
+// Validity is implementation-defined.
+
+x q1[runtime_u];
 "#,
         1,
         2,
         3,
-    ).unwrap();
+    )
+    .unwrap();
 }

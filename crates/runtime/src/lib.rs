@@ -19,7 +19,7 @@ impl<'a, const N: usize> Program<'a, N> {
         Self { src }
     }
 
-    pub fn bind(self, args: &'a [Value; N]) -> BoundProgram<'a, N> {
+    pub fn bind(self, args: &'a [(&'a str, Value); N]) -> BoundProgram<'a, N> {
         BoundProgram {
             program: self,
             args,
@@ -29,5 +29,5 @@ impl<'a, const N: usize> Program<'a, N> {
 
 pub struct BoundProgram<'a, const N: usize> {
     program: Program<'a, N>,
-    args: &'a [Value; N],
+    args: &'a [(&'a str, Value); N],
 }

@@ -35,6 +35,8 @@ pest_derive = "2.7.10"
 
 # Utilities
 thiserror = "1.0.61"
+derive_more = "0.99.17"
+nevermore = "0.1.1"
 
 # Documentation
 document-features = "0.2.7"
@@ -61,7 +63,7 @@ quanto_macros = { workspace = true, optional = true }
 document-features.workspace = true
 
 [features]
-default-features = ["std"]
+default = ["std"]
 std = ["quanto_runtime/std"]
 ## Enable Proc macros
 macros = ["dep:quanto_macros"]

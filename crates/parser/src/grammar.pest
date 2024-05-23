@@ -128,9 +128,8 @@ expression = {
 }
 
 expr_prefix = _{ TILDE | EXCLAMATION_POINT | MINUS }
-// FIXME, should be like { expr_cast ~ LPAREN ~ expr ~ RPAREN }
 
-expr_infix = {
+expr_infix          = _{
     expr_multiplicative
   | expr_additive
   | expr_bitshift
@@ -143,20 +142,19 @@ expr_infix = {
   | expr_logical_and
   | expr_logical_or
 }
+expr_multiplicative =  { ASTERISK | SLASH | PERCENT }
+expr_additive       =  { PLUS | MINUS }
+expr_bitshift       =  { BitshiftOperator }
+expr_comparison     =  { ComparisonOperator }
+expr_equality       =  { EqualityOperator }
+expr_power          =  { DOUBLE_ASTERISK }
+expr_bitwise_and    =  { AMPERSAND }
+expr_bitwise_xor    =  { CARET }
+expr_bitwise_or     =  { PIPE }
+expr_logical_and    =  { DOUBLE_AMPERSAND }
+expr_logical_or     =  { DOUBLE_PIPE }
 
-expr_multiplicative = { ASTERISK | SLASH | PERCENT }
-expr_additive       = { PLUS | MINUS }
-expr_bitshift       = { BitshiftOperator }
-expr_comparison     = { ComparisonOperator }
-expr_equality       = { EqualityOperator }
-expr_power          = { DOUBLE_ASTERISK }
-expr_bitwise_and    = { AMPERSAND }
-expr_bitwise_xor    = { CARET }
-expr_bitwise_or     = { PIPE }
-expr_logical_and    = { DOUBLE_AMPERSAND }
-expr_logical_or     = { DOUBLE_PIPE }
-
-expr_postfix = { indexOperator }
+expr_postfix = _{ indexOperator }
 
 expr_primary    = _{ expr_literal | (expr_cast | expr_durationof | expr_call)? ~ LPAREN ~ expression ~ RPAREN }
 expr_literal    =  {
@@ -378,7 +376,7 @@ FirstIdCharacter   = _{ "_" | ValidUnicode | Letter }
 GeneralIdCharacter = _{ FirstIdCharacter | ASCII_DIGIT }
 
 Identifier    = @{ FirstIdCharacter ~ GeneralIdCharacter* }
-QuantoVar = @{ "$" ~ Identifier }
+QuantoVar     = @{ "$" ~ Identifier }
 HardwareQubit = @{ "$" ~ ASCII_DIGIT+ }
 
 /* fragment */

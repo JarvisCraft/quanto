@@ -38,6 +38,11 @@ impl From<f64> for Value {
 
 #[derive(Debug, Default, PartialEq, PartialOrd, From)]
 pub struct Bit(pub bool);
+impl From<bool> for Value {
+    fn from(value: bool) -> Self {
+        Bit::from(value).into()
+    }
+}
 
 // TODO: a more compact implementation
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, From)]

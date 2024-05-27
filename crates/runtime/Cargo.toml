@@ -20,3 +20,5 @@ nevermore.workspace = true
 [features]
 default = ["std"]
 std = []
+
+rt-quantum-simulator = []

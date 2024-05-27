@@ -1,0 +1,156 @@
+/* Language keywords. */
+OPENQASM      = { "OPENQASM" }
+INCLUDE       = { "include" }
+DEFCALGRAMMAR = { "defcalgrammar" }
+DEF           = { "def" }
+CAL           = { "cal" }
+DEFCAL        = { "defcal" }
+GATE          = { "gate" }
+EXTERN        = { "extern" }
+BOX           = { "box" }
+LET           = { "let" }
+
+BREAK    = { "break" }
+CONTINUE = { "continue" }
+IF       = { "if" }
+ELSE     = { "else" }
+END      = { "end" }
+RETURN   = { "return" }
+FOR      = { "for" }
+WHILE    = { "while" }
+IN       = { "in" }
+SWITCH   = { "switch" }
+CASE     = { "case" }
+DEFAULT  = { "default" }
+
+PRAGMA            = { "#"? ~ "pragma" }
+AnnotationKeyword = { "@" ~ Identifier }
+
+/* Types. */
+
+INPUT    = { "input" }
+OUTPUT   = { "output" }
+CONST    = { "const" }
+READONLY = { "readonly" }
+MUTABLE  = { "mutable" }
+
+QREG  = { "qreg" }
+QUBIT = { "qubit" }
+
+CREG    = { "creg" }
+BOOL    = { "bool" }
+BIT     = { "bit" }
+INT     = { "int" }
+UINT    = { "uint" }
+FLOAT   = { "float" }
+ANGLE   = { "angle" }
+COMPLEX = { "complex" }
+ARRAY   = { "array" }
+VOID    = { "void" }
+
+DURATION = { "duration" }
+STRETCH  = { "stretch" }
+
+/* Builtin identifiers and operations */
+
+GPHASE  = { "gphase" }
+INV     = { "inv" }
+POW     = { "pow" }
+CTRL    = { "ctrl" }
+NEGCTRL = { "negctrl" }
+
+DIM = { "#dim" }
+
+DURATIONOF = { "durationof" }
+
+DELAY   = { "delay" }
+RESET   = { "reset" }
+MEASURE = { "measure" }
+BARRIER = { "barrier" }
+
+BooleanLiteral = @{ "true" | "false" }
+
+/* Symbols */
+
+LBRACKET = { "[" }
+RBRACKET = { "]" }
+LBRACE   = { "{" }
+RBRACE   = { "}" }
+LPAREN   = { "(" }
+RPAREN   = { ")" }
+
+COLON     = { ":" }
+SEMICOLON = { ";" }
+
+DOT   = { "." }
+COMMA = { "," }
+
+EQUALS            = { "=" }
+ARROW             = { "->" }
+PLUS              = { "+" }
+DOUBLE_PLUS       = { "++" }
+MINUS             = { "-" }
+ASTERISK          = { "*" }
+DOUBLE_ASTERISK   = { "**" }
+SLASH             = { "/" }
+PERCENT           = { "%" }
+PIPE              = { "|" }
+DOUBLE_PIPE       = { "||" }
+AMPERSAND         = { "&" }
+DOUBLE_AMPERSAND  = { "&&" }
+CARET             = { "^" }
+AT                = { "@" }
+TILDE             = { "~" }
+EXCLAMATION_POINT = { "!" }
+
+EqualityOperator           = { "==" | "!=" }
+CompoundAssignmentOperator = { "+=" | "-=" | "*=" | "/=" | "&=" | "|=" | "~=" | "^=" | "<<=" | ">>=" | "%=" | "**=" }
+ComparisonOperator         = { ">" | "<" | ">=" | "<=" }
+BitshiftOperator           = { ">>" | "<<" }
+
+IMAG             =  { "im" }
+ImaginaryLiteral = @{ (DecimalIntegerLiteral | FloatLiteral) ~ (" " | "\t")* ~ IMAG }
+
+BinaryIntegerLiteral  = @{ ("0b" | "0B") ~ (ASCII_BIN_DIGIT ~ "_"?)* ~ ASCII_BIN_DIGIT }
+OctalIntegerLiteral   = @{ "0o" ~ (ASCII_OCT_DIGIT ~ "_"?)* ~ ASCII_OCT_DIGIT }
+DecimalIntegerLiteral = @{ (ASCII_DIGIT ~ "_"?)* ~ ASCII_DIGIT }
+HexIntegerLiteral     = @{ ("0x" | "0X") ~ (ASCII_HEX_DIGIT ~ "_"?)* ~ ASCII_HEX_DIGIT }
+
+ValidUnicode       = _{ UPPERCASE_LETTER | LOWERCASE_LETTER | TITLECASE_LETTER | MODIFIER_LETTER | OTHER_LETTER | LETTER_NUMBER }
+Letter             = _{ ASCII_ALPHA }
+FirstIdCharacter   = _{ "_" | ValidUnicode | Letter }
+GeneralIdCharacter = _{ FirstIdCharacter | ASCII_DIGIT }
+
+Identifier    = @{ FirstIdCharacter ~ GeneralIdCharacter* }
+QuantoVar     = @{ "$" ~ Identifier }
+HardwareQubit = @{ "$" ~ ASCII_DIGIT+ }
+
+FloatLiteralExponent = @{ ^"e" ~ (PLUS | MINUS)? ~ DecimalIntegerLiteral }
+FloatLiteral         = @{
+    DecimalIntegerLiteral ~ FloatLiteralExponent
+  | DOT ~ DecimalIntegerLiteral ~ FloatLiteralExponent?
+  | DecimalIntegerLiteral ~ DOT ~ DecimalIntegerLiteral? ~ FloatLiteralExponent?
+}
+
+TimeUnit      = _{ "dt" | "ns" | "us" | "µs" | "ms" | "s" }
+TimingLiteral = @{ (DecimalIntegerLiteral | FloatLiteral) ~ (" " | "\t")* ~ TimeUnit }
+
+BitstringLiteral = @{ "\"" ~ (ASCII_BIN_DIGIT ~ "_"?)* ~ ASCII_BIN_DIGIT ~ "\"" }
+
+Whitespace   = _{ (" " | "\t")+ }
+Newline      = _{ ("\r" | "\n")+ }
+WHITESPACE   = _{ Whitespace | Newline }
+LineComment  = _{ "//" ~ (!NEWLINE ~ ANY)* }
+BlockComment = _{ "/*" ~ (!"*/" ~ ANY)? ~ "*/" }
+COMMENT      = _{ LineComment | BlockComment }
+
+VersionSpecifier = { ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)? }
+
+StringLiteral = {
+    ("\"" ~ (!("\"" | "\r" | "\t" | "\n") ~ ANY)* ~ "\"" | "'" ~ (!("\"" | "\r" | "\t" | "\n") ~ ANY)* ~ "'")
+}
+
+RemainingLineContent = _{ (" " | "\t" | "\r" | "\n") ~ ("\r" | "\n")* }
+
+NestedCalibrationBlock = _{ LBRACE ~ (NestedCalibrationBlock | (!("{" | "}") ~ ANY))* ~ RBRACE }
+CalibrationBlock       =  { (NestedCalibrationBlock | (!("{" | "}") ~ ANY))+ }

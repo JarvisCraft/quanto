@@ -6,6 +6,7 @@ use syn::{
     parse_macro_input,
     punctuated::Punctuated,
     spanned::Spanned,
+    token::Async,
     Expr, LitStr, Path, Token,
 };
 
@@ -26,8 +27,9 @@ pub fn execute(tokens: TokenStream) -> TokenStream {
     let ExecuteMacroInput {
         namespace,
         _semicolon_1,
+        async_keyword,
         src,
-        _coma_1,
+        _semicolon_2: _coma_1,
         args,
         span,
     } = parse_macro_input!(tokens as ExecuteMacroInput);
@@ -71,11 +73,22 @@ pub fn execute(tokens: TokenStream) -> TokenStream {
             }
         }
     } else {
+        let (rt_trait, rt_method) = if async_keyword.is_some() {
+            (
+                quote!(#rt::rt::AsyncQuantoRuntime),
+                quote!(#rt::global::async_rt()),
+            )
+        } else {
+            (
+                quote!(#rt::rt::SyncQuantoRuntime),
+                quote!(#rt::global::sync_rt()),
+            )
+        };
         quote_spanned! {span=>
             {
                 const PROGRAM: #rt::Program<#args_count> = #rt::Program::parse(#src);
-                #rt::rt::SyncQuantoRuntime::execute(
-                    #rt::global::sync_rt(),
+                #rt_trait::execute(
+                    #rt_method,
                     PROGRAM.bind(&[#converted_args]),
                 )
             }
@@ -85,9 +98,10 @@ pub fn execute(tokens: TokenStream) -> TokenStream {
 
 struct ExecuteMacroInput {
     namespace: Path,
-    _semicolon_1: Token![,],
+    _semicolon_1: Token![;],
+    async_keyword: Option<Async>,
     src: LitStr,
-    _coma_1: Token![,],
+    _semicolon_2: Token![;],
     args: Punctuated<ExecuteMacroInputVar, Token![,]>,
 
     span: proc_macro2::Span,
@@ -98,8 +112,9 @@ impl Parse for ExecuteMacroInput {
         Ok(Self {
             namespace: input.parse()?,
             _semicolon_1: input.parse()?,
+            async_keyword: input.parse()?,
             src: input.parse()?,
-            _coma_1: input.parse()?,
+            _semicolon_2: input.parse()?,
             args: input.parse_terminated(Parse::parse, Token![,])?,
             span: input.span(),
         })

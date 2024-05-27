@@ -13,16 +13,16 @@ use smallvec::{CollectionAllocErr, SmallVec};
 
 use self::bindings::{QuantumResult, Tag};
 use crate::{
-    rt::{quantum_simulator, QuantoRuntime, SyncQuantoRuntime},
-    value::{quantum::Value as QuantumValue, scalar::Value as ScalarValue, Value},
+    rt::{QuantoRuntime, SyncQuantoRuntime},
+    value::{
+        quantum::{HardwareQubit, Value as QuantumValue, VirtualQubit},
+        scalar::Value as ScalarValue,
+        Value,
+    },
     BoundProgram, Program,
 };
 
 pub struct QuantumSimulatorRt;
-
-impl QuantoRuntime for QuantumSimulatorRt {
-    type Output = QuantumValue;
-}
 
 #[derive(Debug)]
 pub enum Error {
@@ -52,9 +52,11 @@ impl std::error::Error for Error {
     }
 }
 
-impl SyncQuantoRuntime for QuantumSimulatorRt {
+impl QuantoRuntime for QuantumSimulatorRt {
+    type Output = Value;
     type Error = Error;
-
+}
+impl SyncQuantoRuntime for QuantumSimulatorRt {
     fn execute<const N: usize>(
         &self,
         BoundProgram {
@@ -85,19 +87,26 @@ impl SyncQuantoRuntime for QuantumSimulatorRt {
         } else {
             // SAFETY: zero code indicates that the operation succeeded and the buffer was filled.
             let QuantumResult { tag, value } = unsafe { output.assume_init() };
-            /* Ok(match tag {
-                Tag::VirtualQubit => QuantumValue::VirtualQubit(unsafe { value.qubit }),
-                Tag::HardwareQubit => QuantumValue::HardwareQubit(unsafe { value.qubit }),
-                Tag::Boolean => QuantumValue::from(unsafe { value.boolean }),
-                Tag::Uint8 => QuantumValue::from(unsafe { value.uint8 }),
-                Tag::Uint16 => QuantumValue::from(unsafe { value.uint16 }),
-                Tag::Uint32 => QuantumValue::from(unsafe { value.uint32 }),
-                Tag::Uint64 => QuantumValue::from(unsafe { value.uint64 }),
-                Tag::Uint128 => QuantumValue::from(unsafe { value.uint128 }),
-                Tag::Float32 => QuantumValue::from(unsafe { value.float32 }),
-                Tag::Float64 => QuantumValue::from(unsafe { value.float64 }),
-            }) */
-            Ok(todo!("Unsafe conversion"))
+            Ok(match tag {
+                Tag::VirtualQubit => {
+                    Value::from(QuantumValue::VirtualQubit(VirtualQubit::from(unsafe {
+                        value.virtual_qubit
+                    })))
+                }
+                Tag::HardwareQubit => {
+                    Value::from(QuantumValue::HardwareQubit(HardwareQubit::from(unsafe {
+                        value.hardware_qubit
+                    })))
+                }
+                Tag::Boolean => Value::from(ScalarValue::from(unsafe { value.boolean })),
+                Tag::Uint8 => Value::from(ScalarValue::from(unsafe { value.uint8 })),
+                Tag::Uint16 => Value::from(ScalarValue::from(unsafe { value.uint16 })),
+                Tag::Uint32 => Value::from(ScalarValue::from(unsafe { value.uint32 })),
+                Tag::Uint64 => Value::from(ScalarValue::from(unsafe { value.uint64 })),
+                Tag::Uint128 => Value::from(ScalarValue::from(unsafe { value.uint128 })),
+                Tag::Float32 => Value::from(ScalarValue::from(unsafe { value.float32 })),
+                Tag::Float64 => Value::from(ScalarValue::from(unsafe { value.float64 })),
+            })
         }
     }
 }

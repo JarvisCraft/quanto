@@ -20,6 +20,15 @@ pub enum VirtualQubit {
 }
 impl sealed::Sealed for VirtualQubit {}
 impl QasmValue for VirtualQubit {}
+impl From<bool> for VirtualQubit {
+    fn from(value: bool) -> Self {
+        if value {
+            Self::One
+        } else {
+            Self::Zero
+        }
+    }
+}
 
 #[derive(Debug, Default)]
 pub enum HardwareQubit {
@@ -30,3 +39,12 @@ pub enum HardwareQubit {
 }
 impl sealed::Sealed for HardwareQubit {}
 impl QasmValue for HardwareQubit {}
+impl From<bool> for HardwareQubit {
+    fn from(value: bool) -> Self {
+        if value {
+            Self::One
+        } else {
+            Self::Zero
+        }
+    }
+}

@@ -1,0 +1,218 @@
+program = _{ SOI ~ version? ~ statementOrScope* ~ EOI }
+version =  { OPENQASM ~ VersionSpecifier ~ SEMICOLON }
+
+statement = {
+    pragma
+  | annotation* ~ anyStatement
+}
+// All the actual statements of the language.
+anyStatement = {
+    aliasDeclarationStatement
+  | assignmentStatement
+  | barrierStatement
+  | boxStatement
+  | breakStatement
+  | calStatement
+  | calibrationGrammarStatement
+  | classicalDeclarationStatement
+  | constDeclarationStatement
+  | continueStatement
+  | defStatement
+  | defcalStatement
+  | delayStatement
+  | endStatement
+  | expressionStatement
+  | externStatement
+  | forStatement
+  | gateCallStatement
+  | gateStatement
+  | ifStatement
+  | includeStatement
+  | ioDeclarationStatement
+  | measureArrowAssignmentStatement
+  | oldStyleDeclarationStatement
+  | quantumDeclarationStatement
+  | resetStatement
+  | returnStatement
+  | switchStatement
+  | whileStatement
+}
+
+annotation = { AnnotationKeyword ~ RemainingLineContent? }
+scope      = { LBRACE ~ statementOrScope* ~ RBRACE }
+pragma     = { PRAGMA ~ RemainingLineContent }
+
+statementOrScope = { statement | scope }
+
+/* Start top-level statement definitions. */
+
+// Inclusion statements.
+calibrationGrammarStatement = { DEFCALGRAMMAR ~ StringLiteral ~ SEMICOLON }
+includeStatement            = { INCLUDE ~ StringLiteral ~ SEMICOLON }
+
+// Control-flow statements.
+breakStatement    = { BREAK ~ SEMICOLON }
+continueStatement = { CONTINUE ~ SEMICOLON }
+endStatement      = { END ~ SEMICOLON }
+forStatement      = { FOR ~ scalarType ~ Identifier ~ IN ~ (setExpression | LBRACKET ~ rangeExpression ~ RBRACKET | expression) ~ statementOrScope }
+ifStatement       = { IF ~ LPAREN ~ expression ~ RPAREN ~ statementOrScope ~ (ELSE ~ statementOrScope)? }
+returnStatement   = { RETURN ~ (expression | measureExpression)? ~ SEMICOLON }
+whileStatement    = { WHILE ~ LPAREN ~ expression ~ RPAREN ~ statementOrScope }
+switchStatement   = { SWITCH ~ LPAREN ~ expression ~ RPAREN ~ LBRACE ~ switchCaseItem* ~ RBRACE }
+switchCaseItem    = {
+    CASE ~ expressionList ~ scope
+  | DEFAULT ~ scope
+}
+
+// Quantum directive statements.
+
+barrierStatement = { BARRIER ~ gateOperandList? ~ SEMICOLON }
+boxStatement     = { BOX ~ designator? ~ scope }
+
+delayStatement = { DELAY ~ designator ~ gateOperandList? ~ SEMICOLON }
+
+gateCallStatement = {
+    gateModifier* ~ Identifier ~ (LPAREN ~ expressionList? ~ RPAREN)? ~ designator? ~ gateOperandList ~ SEMICOLON
+  | gateModifier* ~ GPHASE ~ (LPAREN ~ expressionList? ~ RPAREN)? ~ designator? ~ gateOperandList? ~ SEMICOLON
+}
+// measureArrowAssignmentStatement also permits the case of not assigning the
+// result to any classical value too.
+measureArrowAssignmentStatement = { measureExpression ~ (ARROW ~ indexedIdentifier)? ~ SEMICOLON }
+resetStatement                  = { RESET ~ gateOperand ~ SEMICOLON }
+
+// Primitive declaration statements.
+aliasDeclarationStatement     = { LET ~ Identifier ~ EQUALS ~ aliasExpression ~ SEMICOLON }
+classicalDeclarationStatement = { (scalarType | arrayType) ~ Identifier ~ (EQUALS ~ declarationExpression)? ~ SEMICOLON }
+constDeclarationStatement     = { CONST ~ scalarType ~ Identifier ~ EQUALS ~ declarationExpression ~ SEMICOLON }
+ioDeclarationStatement        = { (INPUT | OUTPUT) ~ (scalarType | arrayType) ~ Identifier ~ SEMICOLON }
+oldStyleDeclarationStatement  = { (CREG | QREG) ~ Identifier ~ designator? ~ SEMICOLON }
+quantumDeclarationStatement   = { qubitType ~ Identifier ~ SEMICOLON }
+
+// Declarations and definitions of higher-order objects.
+defStatement    = { DEF ~ Identifier ~ LPAREN ~ argumentDefinitionList? ~ RPAREN ~ returnSignature? ~ scope }
+externStatement = { EXTERN ~ Identifier ~ LPAREN ~ externArgumentList? ~ RPAREN ~ returnSignature? ~ SEMICOLON }
+gateStatement   = { GATE ~ Identifier ~ (LPAREN ~ identifierList? ~ RPAREN)? ~ identifierList ~ scope }
+
+// Non-declaration assignments and calculations.
+assignmentStatement = { indexedIdentifier ~ (EQUALS | CompoundAssignmentOperator) ~ (expression | measureExpression) ~ SEMICOLON }
+expressionStatement = { expression ~ SEMICOLON }
+
+// Statements where the bulk is in the calibration language.
+calStatement    = { CAL ~ LBRACE ~ CalibrationBlock? ~ RBRACE }
+defcalStatement = { DEFCAL ~ defcalTarget ~ (LPAREN ~ defcalArgumentDefinitionList? ~ RPAREN)? ~ defcalOperandList ~ returnSignature? ~ LBRACE ~ CalibrationBlock? ~ RBRACE }
+
+/* End top-level statement definitions. */
+
+/* Start expression definitions. */
+expression = {
+    expr_prefix? ~ expr_primary ~ expr_postfix? ~ (expr_infix ~ expr_prefix? ~ expr_primary ~ expr_postfix?)*
+}
+
+expr_prefix = _{ TILDE | EXCLAMATION_POINT | MINUS }
+
+expr_infix          = _{
+    expr_multiplicative
+  | expr_additive
+  | expr_bitshift
+  | expr_comparison
+  | expr_equality
+  | expr_power
+  | expr_bitwise_and
+  | expr_bitwise_xor
+  | expr_bitwise_or
+  | expr_logical_and
+  | expr_logical_or
+}
+expr_multiplicative =  { ASTERISK | SLASH | PERCENT }
+expr_additive       =  { PLUS | MINUS }
+expr_bitshift       =  { BitshiftOperator }
+expr_comparison     =  { ComparisonOperator }
+expr_equality       =  { EqualityOperator }
+expr_power          =  { DOUBLE_ASTERISK }
+expr_bitwise_and    =  { AMPERSAND }
+expr_bitwise_xor    =  { CARET }
+expr_bitwise_or     =  { PIPE }
+expr_logical_and    =  { DOUBLE_AMPERSAND }
+expr_logical_or     =  { DOUBLE_PIPE }
+
+expr_postfix = _{ indexOperator }
+
+expr_primary    = _{ expr_literal | (expr_cast | expr_durationof | expr_call)? ~ LPAREN ~ expression ~ RPAREN }
+expr_literal    =  {
+    Identifier
+  | BinaryIntegerLiteral
+  | OctalIntegerLiteral
+  | DecimalIntegerLiteral
+  | HexIntegerLiteral
+  | FloatLiteral
+  | ImaginaryLiteral
+  | BooleanLiteral
+  | BitstringLiteral
+  | TimingLiteral
+  | HardwareQubit
+  | QuantoVar
+}
+expr_cast       =  { scalarType | arrayType }
+expr_durationof =  { DURATIONOF }
+expr_call       =  { Identifier }
+
+aliasExpression       = { expression ~ (DOUBLE_PLUS ~ expression)* }
+declarationExpression = { arrayLiteral | expression | measureExpression }
+measureExpression     = { MEASURE ~ gateOperand }
+rangeExpression       = { expression? ~ COLON ~ expression? ~ (COLON ~ expression)? }
+setExpression         = { LBRACE ~ expression ~ (COMMA ~ expression)* ~ COMMA? ~ RBRACE }
+arrayLiteral          = { LBRACE ~ (expression | arrayLiteral) ~ (COMMA ~ (expression | arrayLiteral))* ~ COMMA? ~ RBRACE }
+
+indexOperator = {
+    LBRACKET ~ (setExpression | (expression | rangeExpression) ~ (COMMA ~ (expression | rangeExpression))* ~ COMMA?) ~ RBRACKET
+}
+
+indexedIdentifier = { Identifier ~ indexOperator* }
+
+/* End expression definitions. */
+
+/* Start type definitions. */
+
+returnSignature = { ARROW ~ scalarType }
+gateModifier    = {
+    (INV | POW ~ LPAREN ~ expression ~ RPAREN | (CTRL | NEGCTRL) ~ (LPAREN ~ expression ~ RPAREN)?) ~ AT
+}
+
+scalarType         = {
+    BIT ~ designator?
+  | INT ~ designator?
+  | UINT ~ designator?
+  | FLOAT ~ designator?
+  | ANGLE ~ designator?
+  | BOOL
+  | DURATION
+  | STRETCH
+  | COMPLEX ~ (LBRACKET ~ scalarType ~ RBRACKET)?
+}
+qubitType          = { QUBIT ~ designator? }
+arrayType          = { ARRAY ~ LBRACKET ~ scalarType ~ COMMA ~ expressionList ~ RBRACKET }
+arrayReferenceType = { (READONLY | MUTABLE) ~ ARRAY ~ LBRACKET ~ scalarType ~ COMMA ~ (expressionList | DIM ~ EQUALS ~ expression) ~ RBRACKET }
+
+designator = { LBRACKET ~ expression ~ RBRACKET }
+
+defcalTarget             = { MEASURE | RESET | DELAY | Identifier }
+defcalArgumentDefinition = { expression | argumentDefinition }
+defcalOperand            = { HardwareQubit | Identifier }
+gateOperand              = { indexedIdentifier | HardwareQubit }
+externArgument           = { scalarType | arrayReferenceType | CREG ~ designator? }
+argumentDefinition       = {
+    scalarType ~ Identifier
+  | qubitType ~ Identifier
+  | (CREG | QREG) ~ Identifier ~ designator?
+  | arrayReferenceType ~ Identifier
+}
+
+argumentDefinitionList       = { argumentDefinition ~ (COMMA ~ argumentDefinition)* ~ COMMA? }
+defcalArgumentDefinitionList = { defcalArgumentDefinition ~ (COMMA ~ defcalArgumentDefinition)* ~ COMMA? }
+defcalOperandList            = { defcalOperand ~ (COMMA ~ defcalOperand)* ~ COMMA? }
+expressionList               = { expression ~ (COMMA ~ expression)* ~ COMMA? }
+identifierList               = { Identifier ~ (COMMA ~ Identifier)* ~ COMMA? }
+gateOperandList              = { gateOperand ~ (COMMA ~ gateOperand)* ~ COMMA? }
+externArgumentList           = { externArgument ~ (COMMA ~ externArgument)* ~ COMMA? }
+
+/* End type definitions. */

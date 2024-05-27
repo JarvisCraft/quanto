@@ -9,7 +9,7 @@
 #[macro_export]
 macro_rules! execute {
     ($($token:tt)*) => {
-        $crate::__macro_support::quanto_macros::execute!($crate::__macro_support, $($token)*)
+        $crate::__macro_support::quanto_macros::execute!($crate::__macro_support; $($token)*)
     };
 }
 

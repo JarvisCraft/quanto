@@ -68,16 +68,22 @@ std = ["quanto_runtime/std"]
 ## Enable Proc macros
 macros = ["dep:quanto_macros"]
 
+#! ## Runtime toggles
+#!
+#! The following flags specify the used runtime and thus are mutually exclusive.
+
+## Enables `quantum-simulator`-based runtime.
+rt-quantum-simulator = ["quanto_runtime/rt-quantum-simulator"]
+
 [lints.rust]
 unsafe_code = "forbid"
 
 [[example]]
 name = "main_attribute"
 path = "examples/main_attribute.rs"
-required-features = ["macros"]
-
+required-features = ["macros", "quanto_runtime/rt-quantum-simulator"]
 
 [[example]]
 name = "function_like"
 path = "examples/function_like.rs"
-required-features = ["std", "macros"]
+required-features = ["std", "macros", "quanto_runtime/rt-quantum-simulator"]

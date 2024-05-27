@@ -1,3 +1,4 @@
+#[cfg(feature = "rt-quantum-simulator")]
 pub mod quantum_simulator;
 
 use core::{
@@ -9,11 +10,10 @@ use crate::BoundProgram;
 
 pub trait QuantoRuntime {
     type Output;
+    type Error: Debug + Display;
 }
 
 pub trait SyncQuantoRuntime: QuantoRuntime {
-    type Error: Debug + Display;
-
     fn execute<const N: usize>(
         &self,
         program: BoundProgram<'_, N>,
@@ -21,8 +21,6 @@ pub trait SyncQuantoRuntime: QuantoRuntime {
 }
 
 pub trait AsyncQuantoRuntime: QuantoRuntime {
-    type Error;
-
     fn execute<const N: usize>(
         &self,
         program: BoundProgram<'_, N>,

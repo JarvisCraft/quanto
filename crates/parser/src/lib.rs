@@ -4,7 +4,8 @@ use pest::Parser;
 use pest_derive::Parser;
 
 #[derive(Parser)]
-#[grammar = "grammar.pest"]
+#[grammar = "lexer.pest"]
+#[grammar = "parser.pest"]
 pub struct QuantoParser;
 
 #[derive(thiserror::Error, Debug)]

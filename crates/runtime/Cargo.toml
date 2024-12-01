@@ -14,7 +14,7 @@ include.workspace = true
 [dependencies]
 arbitrary-int.workspace = true
 smallvec.workspace = true
-derive_more.workspace = true
+derive_more = { workspace = true, features = ["from"] }
 nevermore.workspace = true
 
 [features]

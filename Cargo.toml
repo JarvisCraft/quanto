@@ -35,8 +35,6 @@ logos = "0.14.2"
 
 # Parser
 peg = "0.8.4"
-pest = "2.7.10"
-pest_derive = "2.7.10"
 
 # Utilities
 thiserror = "2.0"

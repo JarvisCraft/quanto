@@ -1,10 +1,12 @@
 //! Lexer for Quanto language.
 
 mod error;
+mod source;
 mod stream;
 mod token;
 
 pub use error::*;
+pub use source::*;
 pub use stream::*;
 pub use token::*;
 

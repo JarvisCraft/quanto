@@ -86,6 +86,7 @@ pub enum Token<'source> {
     // Keywords
 
     // Basic keywords
+    #[token("use", callback = |_| Keyword::Use)]
     #[token("fn", callback = |_| Keyword::Fn)]
     #[token("mod", callback = |_| Keyword::Mod)]
     #[token("struct", callback = |_| Keyword::Struct)]
@@ -133,6 +134,7 @@ pub enum CmpOp {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Keyword {
     // Basic keywords
+    Use,
     Fn,
     Mod,
     Struct,

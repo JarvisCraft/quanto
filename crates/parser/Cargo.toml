@@ -13,6 +13,6 @@ include.workspace = true
 
 [dependencies]
 quanto_lexer = { workspace = true, features = ["peg"] }
-pest.workspace = true
-pest_derive = { workspace = true, features = ["grammar-extras"] }
+peg.workspace = true
 thiserror.workspace = true
+num-bigint.workspace = true

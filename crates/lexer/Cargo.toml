@@ -12,3 +12,11 @@ repository.workspace = true
 include.workspace = true
 
 [dependencies]
+logos.workspace = true
+thiserror.workspace = true
+num-bigint.workspace = true
+# TODO: hide behind a feature
+peg = { workspace = true, optional = true }
+
+[features]
+peg = ["dep:peg"]

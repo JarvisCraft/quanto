@@ -15,10 +15,10 @@ repository = "https://github.com/JarvisCraft/quanto"
 include = ["/src", "/examples"]
 
 [workspace.dependencies]
-quanto_lexer.path = "crates/lexer"
-quanto_parser.path = "crates/parser"
-quanto_runtime.path = "crates/runtime"
-quanto_macros.path = "crates/macros"
+quanto_lexer = { path = "crates/lexer" }
+quanto_parser = { path = "crates/parser" }
+quanto_runtime = { path = "crates/runtime" }
+quanto_macros = { path = "crates/macros" }
 
 # Proc macros
 syn = "2.0.57"
@@ -26,10 +26,15 @@ quote = "1.0.35"
 proc-macro2 = "1.0.82"
 
 # Data
+num-bigint = "0.4.6"
 arbitrary-int = { version = "1.2", default-features = false }
 smallvec = "1.13"
 
+# Lexer
+logos = "0.14.2"
+
 # Parser
+peg = "0.8.4"
 pest = "2.7.10"
 pest_derive = "2.7.10"
 
